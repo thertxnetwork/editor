@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import '../models/lsp_models.dart';
 
 /// Service for Language Server Protocol integration
@@ -43,14 +45,14 @@ class LspService {
       
       _stderrSubscription = _process!.stderr
           .transform(utf8.decoder)
-          .listen((data) => print('LSP stderr: $data'));
+          .listen((data) => debugPrint('LSP stderr: $data'));
 
       // Send initialize request
       await _sendInitialize(workspacePath);
       _isInitialized = true;
       return true;
     } catch (e) {
-      print('Failed to start LSP server: $e');
+      debugPrint('Failed to start LSP server: $e');
       return false;
     }
   }
@@ -168,7 +170,7 @@ class LspService {
       final message = jsonDecode(messageContent) as Map<String, dynamic>;
       _handleMessage(message);
     } catch (e) {
-      print('Failed to parse LSP message: $e');
+      debugPrint('Failed to parse LSP message: $e');
     }
 
     // Process any remaining messages
@@ -281,7 +283,7 @@ class LspService {
               ))
           .toList();
     } catch (e) {
-      print('Completion error: $e');
+      debugPrint('Completion error: $e');
       return [];
     }
   }
@@ -318,7 +320,7 @@ class LspService {
         endColumn: result['range']?['end']?['character'],
       );
     } catch (e) {
-      print('Hover error: $e');
+      debugPrint('Hover error: $e');
       return null;
     }
   }
@@ -348,7 +350,7 @@ class LspService {
         endColumn: location['range']['end']['character'],
       );
     } catch (e) {
-      print('Definition error: $e');
+      debugPrint('Definition error: $e');
       return null;
     }
   }
@@ -361,7 +363,7 @@ class LspService {
       await _sendRequest('shutdown', {});
       _sendNotification('exit', {});
     } catch (e) {
-      print('Shutdown error: $e');
+      debugPrint('Shutdown error: $e');
     }
 
     await dispose();
